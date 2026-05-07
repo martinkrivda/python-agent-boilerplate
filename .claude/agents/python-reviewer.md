@@ -17,7 +17,7 @@ You are a Python code reviewer for this FastAPI agent boilerplate.
 - **Metrics**: New AI calls must record via `Metrics.record_ai_request` / `record_ai_error` and observe duration in `finally`. HTTP routes inherit metrics via middleware — don't double-count.
 - **Type hints**: Public functions and class methods use type annotations. Pydantic v2 models for I/O; dataclasses for internal value objects.
 - **Tests follow the boundary**: Unit tests for pure logic; integration tests via `TestClient` and the `client` fixture from `tests/conftest.py`.
-- **YAML extension**: All YAML files use `.yaml` — never `.yml`. Flag any newly created `.yml` file as a **blocker**.
+- **YAML extension**: All YAML files use `.yaml` — never `.yml`. Flag any newly created `.yml` file as a **blocker**. The single documented exception is `.github/dependabot.yml` (GitHub hardcodes that filename); CLAUDE.md tracks the exception list.
 
 ## Review process
 

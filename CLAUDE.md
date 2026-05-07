@@ -11,6 +11,7 @@ Production-ready FastAPI microservice exposing a provider-agnostic AI agent REST
 ## Project conventions
 
 - **YAML files use `.yaml`, never `.yml`.** This is strict — applies to Helm charts, Kubernetes manifests, `docker-compose.yaml`, GitHub workflows, and any other YAML in this repository. When creating or renaming YAML files, use `.yaml`. Flag any `.yml` file as a violation in code review.
+  - **Exception:** `.github/dependabot.yml` — GitHub Dependabot has a hardcoded filename. The rule applies to files we control; external tools with fixed filename contracts are exempt. Document any future exceptions here.
 
 ## Setup & Commands
 

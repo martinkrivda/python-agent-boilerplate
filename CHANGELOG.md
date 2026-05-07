@@ -51,6 +51,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `LOG_ROTATION_WHEN`, `LOG_ROTATION_BACKUP_COUNT`.
 - 7 new tests cover file write, static + dynamic fields, disable toggle,
   gzip rotation, and backup-count retention.
+- `.github/dependabot.yml` — weekly Monday-morning updates for `uv`
+  (Python deps, lockfile-only strategy), `docker` (base image), and
+  `github-actions`. Minor/patch updates grouped to keep PR noise down;
+  Conventional Commits prefixes (`chore(deps)`, `chore(docker)`,
+  `chore(ci)`).
+- CLAUDE.md and python-reviewer agent now document the
+  `dependabot.yml` exception to the strict `.yaml` rule.
 
 ## [0.1.0] — 2026-05-07
 

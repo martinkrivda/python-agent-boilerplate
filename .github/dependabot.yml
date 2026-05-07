@@ -1,0 +1,78 @@
+# Dependabot configuration — https://docs.github.com/en/code-security/dependabot
+#
+# NOTE: GitHub requires this file to be named `dependabot.yml` (not .yaml).
+# This is an exception to the project's strict .yaml convention — see CLAUDE.md.
+#
+# Schedule note: weekly on Monday morning so review work lands at the start
+# of the week. Adjust `timezone` if your team is elsewhere.
+
+version: 2
+
+updates:
+  # ---------------------------------------------------------------------------
+  # Python dependencies — managed by uv via pyproject.toml + uv.lock.
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Europe/Prague"
+    open-pull-requests-limit: 5
+    versioning-strategy: "lockfile-only"   # bump uv.lock; leave pyproject floors alone
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+    groups:
+      python-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ---------------------------------------------------------------------------
+  # Docker base image — tracks updates to python:3.14-slim in the Dockerfile.
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Europe/Prague"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  # ---------------------------------------------------------------------------
+  # GitHub Actions — bumps third-party action versions in .github/workflows/.
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Europe/Prague"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      actions-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
