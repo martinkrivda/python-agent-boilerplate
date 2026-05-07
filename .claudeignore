@@ -1,0 +1,25 @@
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+
+# Dependency lockfile — large, auto-generated, not useful for code understanding
+uv.lock
+
+# Test / tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Git internals and worktrees
+.git/
+.worktrees/
+
+# Superpowers planning artifacts — past plans and specs, not part of the codebase
+docs/superpowers/
+
+# Legacy root-level stub (superseded by app/main.py)
+main.py
