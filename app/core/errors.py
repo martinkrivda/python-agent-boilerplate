@@ -16,8 +16,9 @@ class AppError(Exception):
 @dataclass
 class ValidationError(AppError):
     def __init__(self, detail: str = "Invalid request.", instance: str = "") -> None:
-        super().__init__(status=422, code="E1001", title="Validation Error",
-                         detail=detail, instance=instance)
+        super().__init__(
+            status=422, code="E1001", title="Validation Error", detail=detail, instance=instance
+        )
 
 
 @dataclass
@@ -46,5 +47,10 @@ class ProviderError(AppError):
 @dataclass
 class InternalError(AppError):
     def __init__(self, detail: str = "An unexpected error occurred.", instance: str = "") -> None:
-        super().__init__(status=500, code="E3001", title="Internal Server Error",
-                         detail=detail, instance=instance)
+        super().__init__(
+            status=500,
+            code="E3001",
+            title="Internal Server Error",
+            detail=detail,
+            instance=instance,
+        )

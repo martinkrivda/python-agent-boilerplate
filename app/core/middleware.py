@@ -68,6 +68,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, metrics=None) -> None:
         super().__init__(app)
         from app.core.metrics import get_metrics
+
         self._metrics = metrics or get_metrics()
 
     async def dispatch(self, request: Request, call_next) -> Response:
@@ -83,9 +84,9 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             self._metrics.http_requests_total.labels(
                 method=method, route=route, status_code=status
             ).inc()
-            self._metrics.http_request_duration_seconds.labels(
-                method=method, route=route
-            ).observe(duration)
+            self._metrics.http_request_duration_seconds.labels(method=method, route=route).observe(
+                duration
+            )
             if response.status_code >= 400:
                 self._metrics.http_errors_total.labels(
                     status_code=status, error_code="unknown"
@@ -104,4 +105,5 @@ def _get_route(request: Request) -> str:
 
 def _utc_now() -> str:
     from datetime import UTC, datetime
+
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")

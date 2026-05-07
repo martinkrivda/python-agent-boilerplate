@@ -53,8 +53,9 @@ async def test_generate_returns_result(settings, metrics):
 async def test_generate_timeout_raises_provider_error(settings, metrics):
     client = OpenAICompatibleModelClient(settings, metrics=metrics)
     with patch.object(
-        client._client.chat.completions, "create",
-        new=AsyncMock(side_effect=openai.APITimeoutError(request=MagicMock()))
+        client._client.chat.completions,
+        "create",
+        new=AsyncMock(side_effect=openai.APITimeoutError(request=MagicMock())),
     ):
         with pytest.raises(ProviderError) as exc_info:
             await client.generate([ChatMessage(role="user", content="hi")], GenerateParams())
@@ -65,10 +66,13 @@ async def test_generate_timeout_raises_provider_error(settings, metrics):
 async def test_generate_auth_raises_provider_error(settings, metrics):
     client = OpenAICompatibleModelClient(settings, metrics=metrics)
     with patch.object(
-        client._client.chat.completions, "create",
-        new=AsyncMock(side_effect=openai.AuthenticationError(
-            message="unauthorized", response=MagicMock(), body={}
-        ))
+        client._client.chat.completions,
+        "create",
+        new=AsyncMock(
+            side_effect=openai.AuthenticationError(
+                message="unauthorized", response=MagicMock(), body={}
+            )
+        ),
     ):
         with pytest.raises(ProviderError) as exc_info:
             await client.generate([ChatMessage(role="user", content="hi")], GenerateParams())

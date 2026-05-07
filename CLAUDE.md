@@ -14,25 +14,23 @@ Production-ready FastAPI microservice exposing a provider-agnostic AI agent REST
 
 ## Setup & Commands
 
-```bash
-# Install dependencies
-uv sync
+A `Makefile` wraps the most common commands. Run `make help` for the full list (auto-generated from comments).
 
-# Run the service (development)
-uv run uvicorn app.main:app --reload
+| Make target | Equivalent |
+|-------------|------------|
+| `make install` | `uv sync` |
+| `make dev` | `uv run uvicorn app.main:app --reload` |
+| `make test` | `uv run pytest tests/ -q` |
+| `make lint` / `make format` | `uv run ruff check / format` |
+| `make check` | full quality gate (lint + format-check + tests) |
+| `make coverage` | `pytest --cov=app --cov-branch` |
+| `make docker-build` / `make docker-up` | Docker workflow |
+| `make helm-lint` / `make helm-template` | Helm chart validation / rendering |
+| `make k8s-validate` | client-side `kubectl --dry-run` of all `deploy/k8s/*.yaml` |
+| `make clean` / `make clean-all` | remove caches / also remove `.venv` |
 
-# Run tests
-uv run pytest
-
-# Run a single test
-uv run pytest tests/test_agent.py::test_agent_run_happy_path -v
-
-# Lint
-uv run ruff check app/ tests/
-
-# Add a dependency
-uv add <package>
-```
+Run a single test directly: `uv run pytest tests/test_agent.py::test_agent_run_happy_path -v`.
+Add a dependency: `uv add <package>`.
 
 ## Architecture
 

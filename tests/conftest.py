@@ -30,6 +30,7 @@ def fake_model_client():
 def raises_model_client():
     def factory(exc: Exception) -> RaisesModelClient:
         return RaisesModelClient(exc)
+
     return factory
 
 
