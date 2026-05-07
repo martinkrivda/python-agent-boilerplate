@@ -34,9 +34,10 @@ Add a dependency: `uv add <package>`.
 
 ## Architecture
 
-### Entry point
+### Entry points
 
 - **`app/main.py`** — FastAPI app factory; `lifespan` builds `OpenAICompatibleModelClient` and `ModelSettings` on `app.state`; registers middleware, routers, exception handlers, and `/metrics` WSGI mount.
+- **`app/cli.py`** — Typer-based terminal CLI (`agent` command, registered via `[project.scripts]`). Sub-commands: `version`, `models`, `ask`, `chat`, `serve`. Reuses the same `Settings` / `ModelClient` / `AssistantAgent` / `AgentService` as the HTTP service — never duplicate the agent logic in the CLI.
 
 ### Layer map
 

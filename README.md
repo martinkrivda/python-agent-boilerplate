@@ -14,7 +14,31 @@ Connects to any OpenAI-compatible backend: OpenAI, Ollama, LM Studio, vLLM, Open
 uv sync
 cp .env.example .env
 # edit .env with your provider config
-uv run uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload      # HTTP service
+# or
+uv run agent chat                          # terminal REPL
+```
+
+## CLI
+
+The same agent core is available as a terminal CLI. After `uv sync` the `agent`
+command is on `$PATH` of the project venv:
+
+| Command | Effect |
+|---------|--------|
+| `agent version` | print the package version |
+| `agent models` | show the configured AI provider (no secrets) |
+| `agent ask "..."` | one-shot question, prints the answer (Markdown by default; `--plain` for raw) |
+| `agent chat` | interactive REPL — Ctrl+D / `exit` to leave (no conversation memory in v1) |
+| `agent serve` | start the FastAPI HTTP service (`--host`, `--port`, `--reload`) |
+
+`agent ask` and `agent chat` honour the same `Settings` env vars as the HTTP
+service — switching to OpenAI or another provider works the same way for both.
+
+```bash
+agent ask "What is the capital of France?"
+agent ask "Summarise this:" --temperature 0.2 --max-tokens 200
+agent ask --plain "give me a json" | jq .       # plain output → pipeable
 ```
 
 ## API

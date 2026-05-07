@@ -41,6 +41,14 @@ run: ## Run production-like server (no reload) on PORT
 shell: ## Open a Python REPL inside the project venv
 	uv run python
 
+.PHONY: cli
+cli: ## Show the CLI help
+	uv run agent --help
+
+.PHONY: chat
+chat: ## Start an interactive chat REPL with the agent
+	uv run agent chat
+
 ##@ Testing
 
 .PHONY: test

@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `org.opencontainers.image.{revision,created}` labels.
 - `make docker-build` auto-fills these from `git rev-parse --short HEAD`
   and `date -u`.
+- **Terminal CLI** (`agent` command): `version`, `models`, `ask "<q>"`,
+  `chat` (interactive REPL), `serve` (start the HTTP service). Shares the
+  same `Settings` / `ModelClient` / `AssistantAgent` core as the HTTP
+  service — no duplicated logic.
+- Project is now installable as a wheel (hatchling build backend); the
+  `agent` script is registered via `[project.scripts]`.
 
 ## [0.1.0] — 2026-05-07
 

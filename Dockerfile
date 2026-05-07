@@ -4,10 +4,13 @@ WORKDIR /app
 
 RUN pip install uv --quiet
 
-COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev
+# Layer 1: install dependencies only (cached unless deps change).
+COPY pyproject.toml uv.lock README.md ./
+RUN uv sync --frozen --no-dev --no-install-project
 
+# Layer 2: install the project itself (re-runs when app/ changes).
 COPY app/ ./app/
+RUN uv sync --frozen --no-dev
 
 FROM python:3.14-slim
 
