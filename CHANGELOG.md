@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   promote the `## [Unreleased]` CHANGELOG section to a dated version.
 - `make version`, `make release-patch`, `make release-minor`,
   `make release-major` Make targets.
+- Build provenance: `BUILD_COMMIT` and `BUILD_TIMESTAMP` settings populate
+  `app.state.build_info`. Visible on `/health` as `commit` / `built_at`
+  when set; omitted in local dev.
+- Dockerfile now accepts `--build-arg BUILD_COMMIT=…` and
+  `--build-arg BUILD_TIMESTAMP=…` and writes them as ENV plus the standard
+  `org.opencontainers.image.{revision,created}` labels.
+- `make docker-build` auto-fills these from `git rev-parse --short HEAD`
+  and `date -u`.
 
 ## [0.1.0] — 2026-05-07
 

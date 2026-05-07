@@ -22,6 +22,18 @@ ENV PATH="/root/.local/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Build provenance — pass via `docker build --build-arg BUILD_COMMIT=... --build-arg BUILD_TIMESTAMP=...`
+# (the Makefile `make docker-build` target does this automatically from git + date).
+ARG BUILD_COMMIT=""
+ARG BUILD_TIMESTAMP=""
+ENV BUILD_COMMIT=${BUILD_COMMIT}
+ENV BUILD_TIMESTAMP=${BUILD_TIMESTAMP}
+
+# OCI image labels — standard metadata visible via `docker inspect`.
+LABEL org.opencontainers.image.title="python-agent-boilerplate" \
+      org.opencontainers.image.revision="${BUILD_COMMIT}" \
+      org.opencontainers.image.created="${BUILD_TIMESTAMP}"
+
 USER appuser
 
 EXPOSE 8000

@@ -18,6 +18,26 @@ def test_health_exposes_version(client):
     assert body["data"]["version"] != "0.0.0+unknown"
 
 
+def test_health_omits_build_info_when_unset(client):
+    response = client.get("/health")
+    body = response.json()
+    assert "commit" not in body["data"]
+    assert "built_at" not in body["data"]
+
+
+def test_health_includes_build_info_when_set(app):
+    from fastapi.testclient import TestClient
+
+    from app.core.build_info import BuildInfo
+
+    app.state.build_info = BuildInfo(commit="a3f5e9c", timestamp="2026-05-07T14:30:00Z")
+    with TestClient(app, raise_server_exceptions=False) as c:
+        response = c.get("/health")
+    body = response.json()
+    assert body["data"]["commit"] == "a3f5e9c"
+    assert body["data"]["built_at"] == "2026-05-07T14:30:00Z"
+
+
 def test_health_live(client):
     response = client.get("/health/live")
     assert response.status_code == 200

@@ -42,12 +42,15 @@ def metrics_registry():
 @pytest.fixture
 def app(fake_model_client):
     from app.ai.model_settings import ModelSettings
+    from app.core.build_info import BuildInfo
     from app.core.config import Settings
     from app.main import app as fastapi_app
 
+    settings = Settings()
     fastapi_app.dependency_overrides[get_model_client] = lambda: fake_model_client
     fastapi_app.state.model_client = fake_model_client
-    fastapi_app.state.model_settings = ModelSettings.from_settings(Settings())
+    fastapi_app.state.model_settings = ModelSettings.from_settings(settings)
+    fastapi_app.state.build_info = BuildInfo.from_settings(settings)
     yield fastapi_app
     fastapi_app.dependency_overrides.clear()
 

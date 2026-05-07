@@ -14,6 +14,7 @@ from app.api.envelope import FieldError, error_response, error_response_with_fie
 from app.api.routes.agent import router as agent_router
 from app.api.routes.health import router as health_router
 from app.api.routes.models import router as models_router
+from app.core.build_info import BuildInfo
 from app.core.config import Settings
 from app.core.errors import AppError, InternalError, ValidationError
 from app.core.logging import configure_logging
@@ -30,7 +31,14 @@ async def lifespan(app: FastAPI):
         configure_logging(settings)
         app.state.model_client = OpenAICompatibleModelClient(settings)
         app.state.model_settings = ModelSettings.from_settings(settings)
-        log.info("startup_complete", provider=settings.ai_provider, model=settings.ai_model)
+        app.state.build_info = BuildInfo.from_settings(settings)
+        log.info(
+            "startup_complete",
+            provider=settings.ai_provider,
+            model=settings.ai_model,
+            version=__version__,
+            commit=app.state.build_info.commit or "unknown",
+        )
     yield
     log.info("shutdown")
 

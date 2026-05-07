@@ -84,8 +84,11 @@ check: lint format-check test ## Full quality gate (lint + format-check + tests)
 ##@ Docker
 
 .PHONY: docker-build
-docker-build: ## Build the production Docker image
-	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+docker-build: ## Build the production Docker image (auto-bakes git SHA + timestamp)
+	docker build \
+		--build-arg BUILD_COMMIT=$$(git rev-parse --short HEAD 2>/dev/null || echo unknown) \
+		--build-arg BUILD_TIMESTAMP=$$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+		-t $(IMAGE_NAME):$(IMAGE_TAG) .
 
 .PHONY: docker-up
 docker-up: ## Start the local stack (service + ollama) detached

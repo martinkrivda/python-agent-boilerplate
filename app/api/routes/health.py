@@ -7,8 +7,15 @@ router = APIRouter(tags=["health"])
 
 
 @router.get("/health")
-async def health():
-    return ok({"status": "ok", "version": __version__})
+async def health(request: Request):
+    data: dict = {"status": "ok", "version": __version__}
+    build = getattr(request.app.state, "build_info", None)
+    if build is not None:
+        if build.commit:
+            data["commit"] = build.commit
+        if build.timestamp:
+            data["built_at"] = build.timestamp
+    return ok(data)
 
 
 @router.get("/health/live")

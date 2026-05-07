@@ -111,6 +111,8 @@ app.add_middleware(CorrelationIdMiddleware) # outermost
 | `AI_SUPPORTS_TOOLS` | `false` |
 | `LOG_LEVEL` | `INFO` |
 | `APP_ENV` | `development` |
+| `BUILD_COMMIT` | `""` (auto-baked at Docker build) |
+| `BUILD_TIMESTAMP` | `""` (auto-baked at Docker build) |
 
 See `.env.example` for all variables and provider-specific examples.
 

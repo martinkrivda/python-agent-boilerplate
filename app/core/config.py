@@ -21,3 +21,8 @@ class Settings(BaseSettings):
 
     openrouter_http_referer: str = ""
     openrouter_title: str = ""
+
+    # Build provenance — baked at Docker build time via ARG → ENV.
+    # Empty in local dev (no Docker build args present).
+    build_commit: str = ""
+    build_timestamp: str = ""
