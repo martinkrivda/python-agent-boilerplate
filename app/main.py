@@ -1,10 +1,10 @@
 from contextlib import asynccontextmanager
 
 import structlog
+from a2wsgi import WSGIMiddleware
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from a2wsgi import WSGIMiddleware
 from prometheus_client import make_wsgi_app
 
 from app.ai.model_settings import ModelSettings
@@ -70,7 +70,9 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     log.error("unhandled_exception", request_id=get_request_id(), exc_info=True)
-    return error_response(InternalError(), instance=str(request.url.path), request_id=get_request_id())
+    return error_response(
+        InternalError(), instance=str(request.url.path), request_id=get_request_id()
+    )
 
 
 def _validation_code(error_type: str) -> str:

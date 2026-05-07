@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from pydantic import BaseModel
+
 from app.core.config import Settings
 
 
@@ -13,7 +15,7 @@ class ModelSettings(BaseModel):
     supports_streaming: bool
 
     @classmethod
-    def from_settings(cls, settings: Settings) -> "ModelSettings":
+    def from_settings(cls, settings: Settings) -> ModelSettings:
         return cls(
             provider=settings.ai_provider,
             model=settings.ai_model,

@@ -1,6 +1,7 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import openai
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 from prometheus_client import CollectorRegistry
 
 from app.ai.model_client import ChatMessage, GenerateParams
@@ -36,7 +37,9 @@ def _make_completion(content: str):
 async def test_generate_returns_result(settings, metrics):
     client = OpenAICompatibleModelClient(settings, metrics=metrics)
     completion = _make_completion("hello world")
-    with patch.object(client._client.chat.completions, "create", new=AsyncMock(return_value=completion)):
+    with patch.object(
+        client._client.chat.completions, "create", new=AsyncMock(return_value=completion)
+    ):
         result = await client.generate(
             [ChatMessage(role="user", content="hi")],
             GenerateParams(),

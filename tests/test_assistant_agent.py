@@ -1,7 +1,8 @@
 import pytest
+
+from app.agents.assistant_agent import AssistantAgent
 from app.ai.model_client import ChatMessage, GenerateParams, GenerateResult, ModelClient
 from app.ai.model_settings import ModelSettings
-from app.agents.assistant_agent import AssistantAgent
 from app.core.config import Settings
 
 

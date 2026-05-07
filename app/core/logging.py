@@ -1,5 +1,7 @@
 import logging
+
 import structlog
+
 from app.core.config import Settings
 from app.core.request_context import get_request_id
 

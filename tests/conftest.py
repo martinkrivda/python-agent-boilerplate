@@ -4,7 +4,6 @@ from prometheus_client import CollectorRegistry
 
 from app.ai.model_client import ChatMessage, GenerateParams, GenerateResult, ModelClient
 from app.api.dependencies import get_model_client
-from app.core.metrics import make_metrics
 
 
 class FakeModelClient(ModelClient):
@@ -41,9 +40,9 @@ def metrics_registry():
 
 @pytest.fixture
 def app(fake_model_client):
-    from app.main import app as fastapi_app
     from app.ai.model_settings import ModelSettings
     from app.core.config import Settings
+    from app.main import app as fastapi_app
 
     fastapi_app.dependency_overrides[get_model_client] = lambda: fake_model_client
     fastapi_app.state.model_client = fake_model_client

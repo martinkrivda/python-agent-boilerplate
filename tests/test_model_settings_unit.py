@@ -1,5 +1,5 @@
-from app.core.config import Settings
 from app.ai.model_settings import ModelSettings
+from app.core.config import Settings
 
 
 def test_model_settings_from_settings():

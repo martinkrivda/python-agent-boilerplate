@@ -1,4 +1,5 @@
 from prometheus_client import CollectorRegistry
+
 from app.core.metrics import make_metrics
 
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from datetime import UTC, datetime
 from typing import Any, Generic, TypeVar
 
@@ -33,7 +34,7 @@ class ProblemDetails(BaseModel):
     errors: list[FieldError] | None = None
 
 
-class ApiResponse(BaseModel, Generic[T]):
+class ApiResponse(BaseModel, Generic[T]):  # noqa: UP046
     success: bool
     data: T | None
     error: ProblemDetails | None

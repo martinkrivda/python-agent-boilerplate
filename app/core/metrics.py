@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from prometheus_client import CollectorRegistry, Counter, Histogram, REGISTRY
+
+from prometheus_client import REGISTRY, CollectorRegistry, Counter, Histogram
 
 
 @dataclass
@@ -18,7 +19,9 @@ class Metrics:
         self.ai_model_errors_total.labels(provider=provider, model=model).inc()
 
     def observe_ai_duration(self, provider: str, model: str, seconds: float) -> None:
-        self.ai_model_request_duration_seconds.labels(provider=provider, model=model).observe(seconds)
+        self.ai_model_request_duration_seconds.labels(
+            provider=provider, model=model
+        ).observe(seconds)
 
 
 def make_metrics(registry: CollectorRegistry | None = None) -> Metrics:

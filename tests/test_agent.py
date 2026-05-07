@@ -1,5 +1,7 @@
 import uuid
+
 from fastapi.testclient import TestClient
+
 from app.api.dependencies import get_model_client
 from app.core.errors import ProviderError
 
@@ -46,7 +48,9 @@ def test_agent_run_missing_message_returns_422(client):
 
 
 def test_agent_run_provider_timeout(app, raises_model_client):
-    app.dependency_overrides[get_model_client] = lambda: raises_model_client(ProviderError.timeout())
+    app.dependency_overrides[get_model_client] = lambda: raises_model_client(
+        ProviderError.timeout()
+    )
     with TestClient(app, raise_server_exceptions=False) as c:
         response = c.post("/rest/v1/agent/run", json={"message": "hi"})
     assert response.status_code == 504

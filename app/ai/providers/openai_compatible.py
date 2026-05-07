@@ -1,4 +1,5 @@
 import time
+
 import openai
 import structlog
 from openai import AsyncOpenAI
@@ -64,7 +65,9 @@ class OpenAICompatibleModelClient(ModelClient):
             self._metrics.record_ai_error(self._provider, self._model)
             if exc.status_code in (401, 403):
                 raise ProviderError.auth_failure() from exc
-            raise ProviderError.bad_response(detail=f"Provider returned status {exc.status_code}.") from exc
+            raise ProviderError.bad_response(
+                detail=f"Provider returned status {exc.status_code}."
+            ) from exc
         except Exception as exc:
             self._metrics.record_ai_error(self._provider, self._model)
             log.error("unexpected_provider_error", exc_info=True)

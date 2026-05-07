@@ -23,19 +23,23 @@ class ValidationError(AppError):
 @dataclass
 class ProviderError(AppError):
     @classmethod
-    def timeout(cls, detail: str = "The AI provider timed out.") -> "ProviderError":
+    def timeout(cls, detail: str = "The AI provider timed out.") -> ProviderError:
         return cls(status=504, code="E2001", title="Provider Timeout", detail=detail)
 
     @classmethod
-    def auth_failure(cls, detail: str = "Authentication with the AI provider failed.") -> "ProviderError":
+    def auth_failure(
+        cls, detail: str = "Authentication with the AI provider failed."
+    ) -> ProviderError:
         return cls(status=502, code="E2002", title="Provider Auth Failure", detail=detail)
 
     @classmethod
-    def unavailable(cls, detail: str = "The AI provider is unavailable.") -> "ProviderError":
+    def unavailable(cls, detail: str = "The AI provider is unavailable.") -> ProviderError:
         return cls(status=503, code="E2003", title="Provider Unavailable", detail=detail)
 
     @classmethod
-    def bad_response(cls, detail: str = "The AI provider returned an invalid response.") -> "ProviderError":
+    def bad_response(
+        cls, detail: str = "The AI provider returned an invalid response."
+    ) -> ProviderError:
         return cls(status=502, code="E2004", title="Invalid Provider Response", detail=detail)
 
 
