@@ -1,0 +1,57 @@
+# Normalize line endings to LF on commit
+* text=auto eol=lf
+
+# Python source
+*.py text eol=lf
+
+# Config / data formats
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.json text eol=lf
+*.env  text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.cfg  text eol=lf
+*.ini  text eol=lf
+*.tpl  text eol=lf
+
+# Shell scripts
+*.sh text eol=lf
+
+# Docker
+Dockerfile    text eol=lf
+*.dockerignore text eol=lf
+
+# Git config files
+.gitignore    text eol=lf
+.gitattributes text eol=lf
+.editorconfig  text eol=lf
+.claudeignore  text eol=lf
+
+# Binaries — no line ending conversion, no diff
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.svg  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.otf  binary
+*.eot  binary
+*.zip  binary
+*.tar  binary
+*.gz   binary
+
+# Python bytecode — binary, excluded from diffs
+*.pyc  binary
+*.pyo  binary
+*.pyd  binary
+
+# uv lockfile — mark as text for consistent line endings, use custom diff driver
+uv.lock text eol=lf linguist-generated=true
+
+# Helm templates — treated as text
+*.tpl text eol=lf
