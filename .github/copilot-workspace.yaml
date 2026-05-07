@@ -1,0 +1,146 @@
+# GitHub Copilot Workspace — repository context
+#
+# This file gives Copilot Workspace (and any other AI assistant that reads
+# repository metadata) the context it needs to make sensible suggestions.
+# The canonical project instructions live in:
+#   - CLAUDE.md         (architecture, conventions, env vars, commands)
+#   - CONTRIBUTING.md   (workflow, commit format, release process)
+#   - README.md         (user-facing docs)
+# Keep this file in sync with those at a high level — never duplicate detail.
+
+project:
+  name: python-agent-boilerplate
+  description: >
+    Provider-agnostic AI agent FastAPI microservice. Connects to any
+    OpenAI-compatible backend (OpenAI, Ollama, LM Studio, vLLM, OpenRouter)
+    via a single ModelClient abstraction. Exposes the same agent core through
+    an HTTP API and a terminal CLI.
+  language: python
+  python_version: ">=3.14"
+  package_manager: uv
+  versioning: semver
+  commit_convention: conventional-commits
+
+stack:
+  web: fastapi
+  validation: pydantic-v2
+  settings: pydantic-settings
+  ai_sdk: openai
+  logging: structlog
+  metrics: prometheus-client
+  testing: [pytest, pytest-asyncio]
+  lint_format: ruff
+  cli: typer + rich
+  container: docker
+  orchestration: [kubernetes, helm]
+
+structure:
+  source: app/
+  tests: tests/
+  deploy: deploy/   # k8s manifests + helm chart
+  docs: docs/
+  scripts: scripts/   # release.py
+  layers:
+    core: app/core/      # config, errors, logging, metrics, middleware, request_context, build_info
+    ai: app/ai/          # ModelClient ABC + ModelSettings + providers/
+    agents: app/agents/  # schemas, AssistantAgent, tools (extension point)
+    services: app/services/
+    api: app/api/        # envelope, dependencies, routes/
+    cli: app/cli.py      # typer-based CLI
+
+entry_points:
+  http: app.main:app
+  cli: app.cli:main      # exposes the `agent` console script
+
+routes:
+  - { method: POST, path: /rest/v1/agent/run,        envelope: true }
+  - { method: GET,  path: /rest/v1/models/current,   envelope: true }
+  - { method: GET,  path: /health,                   envelope: true }
+  - { method: GET,  path: /health/live,              envelope: true }
+  - { method: GET,  path: /health/ready,             envelope: true }
+  - { method: GET,  path: /metrics,                  envelope: false }   # Prometheus WSGI
+  - { method: GET,  path: /doc,                      envelope: false }   # OpenAPI JSON
+
+conventions:
+  yaml_extension: ".yaml"   # strict — never .yml
+  async: "async def for I/O on the request path; no requests/time.sleep"
+  envelope: "every business route returns ok(data) or raises an AppError"
+  dependency_injection: "routes use Depends(...) — never read app.state directly"
+  model_client_boundary: |
+    All LLM access goes through ModelClient. Tests use FakeModelClient /
+    RaisesModelClient via app.dependency_overrides[get_model_client].
+    The openai SDK must NOT be imported in tests.
+  secrets:
+    never_log: [api_key, AI_API_KEY, Authorization, X-Api-Key, Cookie, request_body, model_output]
+    never_in_response: [api_key, AI_API_KEY, HTTP-Referer, X-OpenRouter-Title]
+  error_codes:
+    E1001: validation error (HTTP 422)
+    E2001: provider timeout (HTTP 504)
+    E2002: provider auth failure (HTTP 502)
+    E2003: provider unavailable (HTTP 503)
+    E2004: invalid provider response (HTTP 502)
+    E3001: unhandled internal error (HTTP 500)
+
+logging:
+  pipeline: "structlog wraps stdlib logging — same output for both"
+  static_fields: [service, env, version, hostname, timestamp, level]
+  per_request_fields: [request_id, client_ip, method, path, user_id, conversation_id]
+  binding: "via structlog.contextvars; cleared in middleware finally"
+  handlers:
+    console: always-on
+    file: opt-in via LOG_TO_FILE; daily rotation, gzip, 30-day retention
+
+testing:
+  command: make test            # uv run pytest tests/ -q
+  full_gate: make check         # lint + format + tests
+  fixtures:
+    - "FakeModelClient — canned GenerateResult"
+    - "RaisesModelClient(exc) — raises on generate"
+    - "client — TestClient(app, raise_server_exceptions=False)"
+    - "metrics_registry — isolated CollectorRegistry"
+  rules:
+    - "no real LLM calls"
+    - "no openai SDK import in test files"
+    - "isolated CollectorRegistry per test that touches metrics"
+
+commands:
+  setup: make install          # uv sync
+  dev: make dev                # uvicorn --reload
+  cli: make cli                # show CLI help
+  chat: make chat              # interactive REPL
+  test: make test
+  lint: make lint
+  format: make format
+  full_gate: make check
+  coverage: make coverage
+  docker_build: make docker-build   # auto-bakes BUILD_COMMIT + BUILD_TIMESTAMP
+  helm_lint: make helm-lint
+  release_patch: make release-patch
+  release_minor: make release-minor
+  release_major: make release-major
+
+extension_points:
+  tool_calling: app/agents/tools.py
+  streaming: "add ModelClient.generate_stream() in app/ai/model_client.py"
+  conversation_memory: "wire AgentRunRequest.conversation_id to a store in app/services/"
+  rag: "new service injected into AgentService"
+  new_provider: "new ModelClient subclass in app/ai/providers/"
+  background_jobs: "Celery/Redis integration in app/services/"
+
+avoid:
+  - "do NOT use pip / poetry / conda — uv only"
+  - "do NOT use .yml extension — always .yaml"
+  - "do NOT import openai SDK in test files"
+  - "do NOT read app.state directly inside route bodies — use Depends()"
+  - "do NOT log secrets, request bodies, or model output"
+  - "do NOT return raw dicts from business routes — use ok(...) / error_response(...)"
+  - "do NOT add features beyond the v1 spec without updating docs/superpowers/specs"
+  - "do NOT push to main directly — open a PR with a Conventional Commits title"
+  - "do NOT skip make check before opening a PR"
+
+focus_areas:
+  - "preserve the ModelClient boundary so tests stay provider-free"
+  - "keep the response envelope discipline (success/data/error/meta invariants)"
+  - "keep middleware order: MetricsMiddleware (innermost) < RequestLoggingMiddleware < CorrelationIdMiddleware (outermost)"
+  - "every new route needs schema + service + tests + CHANGELOG entry"
+  - "every new provider needs error mapping to ProviderError.{timeout,auth_failure,unavailable,bad_response}"
