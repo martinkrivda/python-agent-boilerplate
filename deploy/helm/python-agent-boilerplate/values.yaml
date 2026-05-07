@@ -1,0 +1,82 @@
+replicaCount: 2
+
+image:
+  repository: python-agent-boilerplate
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  host: agent.example.com
+  tls: []
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+serviceMonitor:
+  enabled: false
+
+probes:
+  liveness:
+    path: /health/live
+    initialDelaySeconds: 10
+    periodSeconds: 15
+  readiness:
+    path: /health/ready
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  startup:
+    path: /health
+    failureThreshold: 10
+    periodSeconds: 5
+
+env:
+  APP_ENV: production
+  LOG_LEVEL: INFO
+  AI_PROVIDER: ollama
+  AI_MODEL: qwen3:8b
+  AI_BASE_URL: http://localhost:11434/v1
+  AI_REQUEST_TIMEOUT: "60"
+  AI_SUPPORTS_TOOLS: "false"
+  AI_SUPPORTS_STRUCTURED_OUTPUT: "false"
+  AI_SUPPORTS_THINKING: "false"
+  AI_SUPPORTS_STREAMING: "false"
+  AI_PROBE_ON_READY: "false"
+
+secret:
+  AI_API_KEY: ""

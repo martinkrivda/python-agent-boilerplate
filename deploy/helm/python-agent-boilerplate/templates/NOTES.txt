@@ -1,0 +1,11 @@
+python-agent-boilerplate has been deployed.
+
+Access the service:
+  kubectl port-forward svc/{{ include "python-agent-boilerplate.fullname" . }} 8000:80 -n {{ .Release.Namespace }}
+  curl http://localhost:8000/health
+
+API endpoint:
+  POST http://localhost:8000/rest/v1/agent/run
+  Body: {"message": "hello"}
+
+Docs: http://localhost:8000/reference
