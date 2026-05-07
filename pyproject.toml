@@ -12,6 +12,7 @@ dependencies = [
     "openai>=1.35",
     "structlog>=24.1",
     "prometheus-client>=0.20",
+    "a2wsgi>=1.10.10",
 ]
 
 [dependency-groups]

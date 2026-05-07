@@ -15,7 +15,6 @@ def configure_logging(settings: Settings) -> None:
     structlog.configure(
         processors=[
             structlog.stdlib.add_log_level,
-            structlog.stdlib.add_logger_name,
             _add_request_id,
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.processors.JSONRenderer(),

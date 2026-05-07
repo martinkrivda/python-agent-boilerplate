@@ -4,8 +4,8 @@ import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from a2wsgi import WSGIMiddleware
 from prometheus_client import make_wsgi_app
-from starlette.middleware.wsgi import WSGIMiddleware
 
 from app.ai.model_settings import ModelSettings
 from app.ai.providers.openai_compatible import OpenAICompatibleModelClient
@@ -24,11 +24,12 @@ log = structlog.get_logger()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    settings = Settings()
-    configure_logging(settings)
-    app.state.model_client = OpenAICompatibleModelClient(settings)
-    app.state.model_settings = ModelSettings.from_settings(settings)
-    log.info("startup_complete", provider=settings.ai_provider, model=settings.ai_model)
+    if not hasattr(app.state, "model_client"):
+        settings = Settings()
+        configure_logging(settings)
+        app.state.model_client = OpenAICompatibleModelClient(settings)
+        app.state.model_settings = ModelSettings.from_settings(settings)
+        log.info("startup_complete", provider=settings.ai_provider, model=settings.ai_model)
     yield
     log.info("shutdown")
 
