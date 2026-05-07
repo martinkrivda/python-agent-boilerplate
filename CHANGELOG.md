@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `app.__version__` exported from `app/__init__.py`, derived from
+  `pyproject.toml` via `tomllib` (single source of truth).
+- Version surfaced in the FastAPI app (`/doc` OpenAPI metadata) and in
+  `GET /health` response (`data.version`).
+- `scripts/release.py` to bump version following SemVer, sync it across
+  `pyproject.toml`, Helm `Chart.yaml`, and K8s `deployment.yaml`, and
+  promote the `## [Unreleased]` CHANGELOG section to a dated version.
+- `make version`, `make release-patch`, `make release-minor`,
+  `make release-major` Make targets.
+
 ## [0.1.0] — 2026-05-07
 
 Initial release implementing the v1 design spec

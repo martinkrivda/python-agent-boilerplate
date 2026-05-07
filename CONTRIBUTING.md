@@ -141,18 +141,44 @@ This project follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.
 While the project is at `0.x` anything may change between minor versions.
 After `1.0.0` we commit to the contract above.
 
+### Where the version lives
+
+| Layer | File | How it's set |
+|-------|------|--------------|
+| Build / metadata | `pyproject.toml` `[project] version` | **Single source of truth** — the release script bumps this |
+| Runtime | `app.__version__` (in `app/__init__.py`) | Derived from `pyproject.toml` at import time via `tomllib` |
+| Runtime visibility | FastAPI app `version`, `/doc` OpenAPI metadata, `/health` response | Reads `app.__version__` |
+| Helm chart | `deploy/helm/python-agent-boilerplate/Chart.yaml` (`version`, `appVersion`) | Synced by the release script |
+| K8s manifest | `deploy/k8s/deployment.yaml` (`app.kubernetes.io/version`) | Synced by the release script |
+| Git | annotated tag `vX.Y.Z` | Created manually after review |
+
 ### Cutting a release
 
 1. Confirm `## [Unreleased]` in `CHANGELOG.md` accurately summarises every
-   change since the last release.
-2. Decide the new version (`MAJOR.MINOR.PATCH`) per SemVer.
-3. Move `## [Unreleased]` entries into a new section with the version and
-   today's date (UTC). Reset `## [Unreleased]` to empty.
-4. Bump `version` in `pyproject.toml`.
-5. Commit: `chore(release): vX.Y.Z`.
-6. Tag and push: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z`.
-7. Trigger the deployment pipeline / build & publish image and chart per your
-   ops setup.
+   change since the last release. Edit it if anything is missing.
+2. Decide which bump kind applies per SemVer (`patch` / `minor` / `major`).
+3. Run **one** of:
+   ```bash
+   make release-patch    # X.Y.Z   → X.Y.(Z+1)
+   make release-minor    # X.Y.Z   → X.(Y+1).0
+   make release-major    # X.Y.Z   → (X+1).0.0
+   ```
+   The script bumps `pyproject.toml`, `Chart.yaml` (`version` and `appVersion`),
+   `deployment.yaml` (`app.kubernetes.io/version` label), and promotes the
+   `## [Unreleased]` CHANGELOG section to a dated version section. It does
+   **not** auto-commit — review the diff first.
+4. Review (`git diff`) and commit:
+   ```bash
+   git add -u
+   git commit -m "chore(release): vX.Y.Z"
+   ```
+5. Tag and push:
+   ```bash
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push && git push --tags
+   ```
+6. Trigger the deployment pipeline / build & publish image and chart per your
+   ops setup. The Docker image tag should match the git tag.
 
 ## Reporting issues
 

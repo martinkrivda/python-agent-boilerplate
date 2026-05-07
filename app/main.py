@@ -7,6 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from prometheus_client import make_wsgi_app
 
+from app import __version__
 from app.ai.model_settings import ModelSettings
 from app.ai.providers.openai_compatible import OpenAICompatibleModelClient
 from app.api.envelope import FieldError, error_response, error_response_with_fields
@@ -36,6 +37,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="python-agent-boilerplate",
+    version=__version__,
     docs_url=None,
     redoc_url=None,
     openapi_url="/doc",

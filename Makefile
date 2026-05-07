@@ -116,6 +116,24 @@ k8s-validate: ## Client-side validate K8s manifests (requires kubectl)
 		kubectl apply --dry-run=client -f $$f >/dev/null && echo "  ok" || echo "  FAIL"; \
 	done
 
+##@ Release
+
+.PHONY: version
+version: ## Show the current project version
+	@grep -m1 -E '^version = "' pyproject.toml | awk -F'"' '{print $$2}'
+
+.PHONY: release-patch
+release-patch: ## Bump patch version (X.Y.Z → X.Y.Z+1) and promote CHANGELOG
+	uv run python scripts/release.py patch
+
+.PHONY: release-minor
+release-minor: ## Bump minor version (X.Y.Z → X.Y+1.0) and promote CHANGELOG
+	uv run python scripts/release.py minor
+
+.PHONY: release-major
+release-major: ## Bump major version (X.Y.Z → X+1.0.0) and promote CHANGELOG
+	uv run python scripts/release.py major
+
 ##@ Cleanup
 
 .PHONY: clean

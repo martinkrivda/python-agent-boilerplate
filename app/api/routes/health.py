@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request
 
+from app import __version__
 from app.api.envelope import ok
 
 router = APIRouter(tags=["health"])
@@ -7,7 +8,7 @@ router = APIRouter(tags=["health"])
 
 @router.get("/health")
 async def health():
-    return ok({"status": "ok"})
+    return ok({"status": "ok", "version": __version__})
 
 
 @router.get("/health/live")

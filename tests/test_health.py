@@ -9,6 +9,15 @@ def test_health_returns_200(client):
     assert body["data"]["status"] == "ok"
 
 
+def test_health_exposes_version(client):
+    from app import __version__
+
+    response = client.get("/health")
+    body = response.json()
+    assert body["data"]["version"] == __version__
+    assert body["data"]["version"] != "0.0.0+unknown"
+
+
 def test_health_live(client):
     response = client.get("/health/live")
     assert response.status_code == 200
