@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "defaultMode": "acceptEdits",
+  "permissions": {
+    "allow": [
+      "Bash(uv sync:*)",
+      "Bash(uv add:*)",
+      "Bash(uv remove:*)",
+      "Bash(uv run:*)",
+      "Bash(uv lock:*)",
+      "Bash(uv tree:*)",
+      "Bash(uv pip:*)",
+      "Bash(uv build:*)",
+      "Bash(uv cache:*)",
+      "Bash(uv venv:*)",
+      "Bash(uv python:*)",
+      "Bash(uv tool:*)",
+
+      "Bash(pytest:*)",
+      "Bash(ruff:*)",
+
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git cat-file:*)",
+      "Bash(git describe:*)",
+      "Bash(git grep:*)",
+      "Bash(git blame:*)",
+      "Bash(git worktree list:*)",
+      "Bash(git config --get:*)",
+
+      "Bash(rg:*)",
+      "Bash(fd:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(tree:*)",
+      "Bash(jq:*)",
+      "Bash(find:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(file:*)",
+      "Bash(which:*)",
+
+      "Bash(docker ps:*)",
+      "Bash(docker images:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker inspect:*)",
+      "Bash(docker compose ps:*)",
+      "Bash(docker compose logs:*)",
+      "Bash(docker compose config:*)",
+
+      "Bash(kubectl get:*)",
+      "Bash(kubectl describe:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(kubectl explain:*)",
+      "Bash(kubectl config view:*)",
+
+      "Bash(helm template:*)",
+      "Bash(helm lint:*)",
+      "Bash(helm list:*)",
+      "Bash(helm show:*)",
+
+      "Write(./app/**)",
+      "Write(./tests/**)",
+      "Write(./deploy/**)",
+      "Write(./docs/**)",
+      "Edit(./app/**)",
+      "Edit(./tests/**)",
+      "Edit(./deploy/**)",
+      "Edit(./docs/**)"
+    ],
+    "ask": [
+      "Bash(docker build:*)",
+      "Bash(docker run:*)",
+      "Bash(docker push:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker compose up:*)",
+      "Bash(docker compose down:*)",
+      "Bash(docker compose build:*)",
+
+      "Bash(kubectl apply:*)",
+      "Bash(kubectl create:*)",
+      "Bash(kubectl rollout:*)",
+      "Bash(kubectl scale:*)",
+      "Bash(kubectl exec:*)",
+      "Bash(kubectl port-forward:*)",
+
+      "Bash(helm install:*)",
+      "Bash(helm upgrade:*)",
+      "Bash(helm uninstall:*)",
+
+      "Bash(uv publish:*)",
+      "Bash(uv tool install:*)",
+
+      "Write(./.github/**)",
+      "Edit(./.github/**)",
+      "Edit(./pyproject.toml)",
+      "Edit(./Dockerfile)",
+      "Edit(./docker-compose.yml)",
+      "Edit(./docker-compose.yaml)",
+      "Edit(./.env.example)",
+      "Edit(./.python-version)",
+      "Edit(./CLAUDE.md)"
+    ],
+    "deny": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)",
+      "Bash(git switch:*)",
+      "Bash(git stash:*)",
+      "Bash(git tag:*)",
+      "Bash(git remote:*)",
+      "Bash(git clean:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git revert:*)",
+      "Bash(git submodule:*)",
+      "Bash(git worktree add:*)",
+      "Bash(git worktree remove:*)",
+      "Bash(git worktree move:*)",
+
+      "Bash(kubectl delete:*)",
+      "Bash(kubectl drain:*)",
+      "Bash(helm delete:*)",
+      "Bash(docker rm:*)",
+      "Bash(docker rmi:*)",
+      "Bash(docker volume rm:*)",
+      "Bash(docker network rm:*)",
+      "Bash(docker system prune:*)",
+
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)",
+
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Read(./**/credentials*)",
+      "Read(./**/id_rsa)",
+      "Read(./**/id_ed25519)"
+    ],
+    "additionalDirectories": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command // empty'); echo \"$cmd\" | grep -qE '\\b(pip install|pip3 install|python -m pip install|pipx install|poetry add|poetry install|conda install|conda create)\\b' && { echo 'Use uv (uv add / uv sync) for dependency management — pip / poetry / conda are blocked' >&2; exit 2; } || exit 0"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=$(jq -r '.tool_input.file_path // empty'); case \"$file\" in *.py|*.pyi) cd \"$CLAUDE_PROJECT_DIR\" 2>/dev/null && uv run --no-sync ruff check --fix \"$file\" >/dev/null 2>&1; uv run --no-sync ruff format \"$file\" >/dev/null 2>&1 ;; esac; exit 0"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "branch=$(git -C \"$CLAUDE_PROJECT_DIR\" branch --show-current 2>/dev/null || echo unknown); changed=$(git -C \"$CLAUDE_PROJECT_DIR\" status --porcelain 2>/dev/null | wc -l | tr -d ' '); jq -nc --arg ctx \"Branch: $branch · $changed changed files\" '{hookSpecificOutput: {hookEventName: \"SessionStart\", additionalContext: $ctx}}'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" 2>/dev/null && uv run --no-sync ruff check app/ tests/ 2>&1 | tail -5 || true"
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "APP_ENV": "development",
+    "DISABLE_TELEMETRY": "1"
+  }
+}
