@@ -150,3 +150,57 @@ helm install agent deploy/helm/python-agent-boilerplate \
 | RAG | New service injected into `AgentService` in `app/services/` |
 | Additional providers | New `ModelClient` subclass in `app/ai/providers/` |
 | Background jobs | Celery/Redis integration in `app/services/` |
+
+## Contributing
+
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide. The essentials:
+
+- Set up: `make install` · validate: `make check` (lint + format + tests).
+- Use a feature branch off `main`. Don't push to `main` directly.
+- Add a one-line entry to `## [Unreleased]` in **[CHANGELOG.md](CHANGELOG.md)**
+  for any user-visible change.
+
+### Conventional Commits
+
+Every commit message follows
+[Conventional Commits 1.0.0](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <imperative summary>
+```
+
+| Type | Use for | SemVer |
+|------|---------|--------|
+| `feat` | new feature | MINOR |
+| `fix` | bug fix | PATCH |
+| `perf` | performance | PATCH |
+| `refactor` / `style` | code change, no behaviour change | none |
+| `docs` | docs only | none |
+| `test` | tests only | none |
+| `build` / `ci` / `chore` | tooling, deps, infra | none |
+
+Breaking changes use `feat(api)!: …` plus a `BREAKING CHANGE:` footer and
+trigger a **MAJOR** version bump.
+
+Examples:
+
+```
+feat(api): add /rest/v1/conversations endpoint
+fix(envelope): preserve X-Request-Id when validation fails
+docs: clarify OpenRouter setup
+chore(deps): bump openai to 1.40
+```
+
+### Semantic Versioning
+
+This project follows [SemVer 2.0.0](https://semver.org/spec/v2.0.0.html).
+
+| Part | Bumped when |
+|------|-------------|
+| **MAJOR** | Breaking change — envelope shape, error code value, removed route, breaking config rename, removed `ModelClient` method |
+| **MINOR** | New backwards-compatible feature — new route, new provider, new optional config |
+| **PATCH** | Backwards-compatible fix or internal improvement |
+
+While the project is at `0.x`, anything may change between minor versions.
+The full release procedure (changelog promotion, `pyproject.toml` bump, tag,
+publish) is described in [CONTRIBUTING.md](CONTRIBUTING.md#cutting-a-release).
