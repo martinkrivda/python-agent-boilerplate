@@ -1,0 +1,14 @@
+.env
+.env.*
+.git
+.gitignore
+.venv
+.worktrees
+__pycache__
+*.pyc
+*.pyo
+tests/
+deploy/
+docs/
+*.md
+!README.md
