@@ -12,5 +12,8 @@ wheels/
 # Git worktrees
 .worktrees/
 
+# Runtime logs
+logs/
+
 # Claude Code — keep shared settings.json, ignore personal overrides
 .claude/settings.local.json

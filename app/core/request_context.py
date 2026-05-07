@@ -1,15 +1,20 @@
-from contextvars import ContextVar, Token
+"""Request-scoped context — backed by ``structlog.contextvars``.
 
-_request_id_var: ContextVar[str] = ContextVar("request_id", default="")
+Per-request fields are bound by the ``CorrelationIdMiddleware`` (request_id,
+client_ip, method, path) and by the agent route (user_id when present in the
+request body). Every log event picks them up automatically through the
+``merge_contextvars`` processor.
 
+The ``get_request_id()`` helper is kept as a small read-only convenience for
+the response envelope (``ok()`` / ``error_response()``).
+"""
 
-def set_request_id(request_id: str) -> Token:
-    return _request_id_var.set(request_id)
+from __future__ import annotations
+
+from structlog.contextvars import get_contextvars
 
 
 def get_request_id() -> str:
-    return _request_id_var.get()
-
-
-def reset_request_id(token: Token) -> None:
-    _request_id_var.reset(token)
+    """Return the current request id, or an empty string if not set."""
+    value = get_contextvars().get("request_id", "")
+    return value if isinstance(value, str) else str(value)

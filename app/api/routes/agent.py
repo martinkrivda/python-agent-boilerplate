@@ -1,3 +1,4 @@
+import structlog
 from fastapi import APIRouter, Depends
 
 from app.agents.schemas import AgentRunRequest
@@ -13,5 +14,9 @@ async def run_agent(
     body: AgentRunRequest,
     service: AgentService = Depends(get_agent_service),
 ):
+    if body.user_id:
+        structlog.contextvars.bind_contextvars(user_id=body.user_id)
+    if body.conversation_id:
+        structlog.contextvars.bind_contextvars(conversation_id=body.conversation_id)
     result = await service.run(body)
     return ok(result.model_dump())

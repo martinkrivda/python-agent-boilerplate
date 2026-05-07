@@ -6,21 +6,36 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from app.core.request_context import get_request_id, reset_request_id, set_request_id
-
 log = structlog.get_logger()
 
 _EXCLUDED_PATHS = {"/metrics", "/doc", "/reference"}
 
 
+def _client_ip(request: Request) -> str:
+    """Best-effort client IP — honours X-Forwarded-For when present."""
+    fwd = request.headers.get("x-forwarded-for")
+    if fwd:
+        return fwd.split(",")[0].strip()
+    if request.client:
+        return request.client.host
+    return ""
+
+
 class CorrelationIdMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next) -> Response:
         request_id = request.headers.get("X-Request-Id") or str(uuid.uuid4())
-        token = set_request_id(request_id)
+        # Reset before binding so per-worker thread reuse can't leak state.
+        structlog.contextvars.clear_contextvars()
+        structlog.contextvars.bind_contextvars(
+            request_id=request_id,
+            client_ip=_client_ip(request),
+            method=request.method,
+            path=request.url.path,
+        )
         try:
             response = await call_next(request)
         except Exception:
-            log.error("middleware_exception", request_id=request_id, exc_info=True)
+            log.error("middleware_exception", exc_info=True)
             response = JSONResponse(
                 status_code=500,
                 content={
@@ -41,7 +56,7 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
                 headers={"Cache-Control": "no-store"},
             )
         finally:
-            reset_request_id(token)
+            structlog.contextvars.clear_contextvars()
         response.headers["X-Request-Id"] = request_id
         return response
 
@@ -53,14 +68,9 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         start = time.monotonic()
         response = await call_next(request)
         duration_ms = round((time.monotonic() - start) * 1000)
-        log.info(
-            "http_request",
-            method=request.method,
-            path=request.url.path,
-            status_code=response.status_code,
-            duration_ms=duration_ms,
-            request_id=get_request_id(),
-        )
+        # method / path / request_id / client_ip already bound via contextvars,
+        # so they're emitted automatically.
+        log.info("http_request", status_code=response.status_code, duration_ms=duration_ms)
         return response
 
 

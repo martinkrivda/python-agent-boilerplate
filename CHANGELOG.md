@@ -32,6 +32,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   service — no duplicated logic.
 - Project is now installable as a wheel (hatchling build backend); the
   `agent` script is registered via `[project.scripts]`.
+- **File logging with rotation, gzip, and retention.** structlog now wraps
+  stdlib `logging` so events flow through the same pipeline whether emitted
+  by `structlog.get_logger()` or stdlib `logging.getLogger(...)`.
+  - Console handler always present (12-factor / Docker / K8s).
+  - Optional `TimedRotatingFileHandler` (default ON via `LOG_TO_FILE=true`)
+    writes to `logs/app.log`, rotates daily at UTC midnight, gzips rotated
+    files, and prunes after `LOG_ROTATION_BACKUP_COUNT` (default 30 → ≈30
+    days).
+  - Static fields on every event: `service`, `env`, `version`, `hostname`.
+  - Per-request fields via `structlog.contextvars` (`request_id`,
+    `client_ip`, `method`, `path`; plus `user_id` / `conversation_id`
+    bound by the agent route when present).
+  - `log_format` setting: `json` (default) or `console` (pretty for dev).
+- `request_context.py` now reads from `structlog.contextvars` instead of a
+  bespoke `ContextVar`.
+- New env vars: `LOG_FORMAT`, `LOG_TO_FILE`, `LOG_DIR`, `LOG_FILE_NAME`,
+  `LOG_ROTATION_WHEN`, `LOG_ROTATION_BACKUP_COUNT`.
+- 7 new tests cover file write, static + dynamic fields, disable toggle,
+  gzip rotation, and backup-count retention.
 
 ## [0.1.0] — 2026-05-07
 

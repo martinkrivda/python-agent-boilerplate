@@ -8,6 +8,17 @@ class Settings(BaseSettings):
     app_env: str = "development"
     log_level: str = "INFO"
 
+    # Logging — console always enabled. File logging is opt-in.
+    # When enabled: TimedRotatingFileHandler writes to {log_dir}/{log_file_name},
+    # rotates by `log_rotation_when` (midnight = daily), gzips rotated files,
+    # and keeps the last `log_rotation_backup_count` (default 30 → ~30 days).
+    log_to_file: bool = True
+    log_dir: str = "logs"
+    log_file_name: str = "app.log"
+    log_rotation_when: str = "midnight"
+    log_rotation_backup_count: int = 30
+    log_format: str = "json"  # "json" | "console" (console = pretty for local dev)
+
     ai_provider: str = "ollama"
     ai_model: str = "qwen3:8b"
     ai_base_url: str = "http://localhost:11434/v1"

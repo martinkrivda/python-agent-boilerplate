@@ -114,6 +114,25 @@ app.add_middleware(CorrelationIdMiddleware) # outermost
 | `APP_ENV` | `development` |
 | `BUILD_COMMIT` | `""` (auto-baked at Docker build) |
 | `BUILD_TIMESTAMP` | `""` (auto-baked at Docker build) |
+| `LOG_FORMAT` | `json` (or `console` for local dev) |
+| `LOG_TO_FILE` | `true` — also write to `logs/app.log` |
+| `LOG_DIR` | `logs` |
+| `LOG_FILE_NAME` | `app.log` |
+| `LOG_ROTATION_WHEN` | `midnight` — daily UTC rotation |
+| `LOG_ROTATION_BACKUP_COUNT` | `30` — older files gzipped, then pruned |
+
+### Logging conventions
+
+- structlog wraps stdlib `logging`; both `structlog.get_logger()` and
+  `logging.getLogger(...)` produce identical structured output.
+- Static fields automatically on every event: `service`, `env`, `version`,
+  `hostname`, `timestamp`, `level`.
+- Per-request fields via `structlog.contextvars` — `request_id`, `client_ip`,
+  `method`, `path` are bound by `CorrelationIdMiddleware`; `user_id` /
+  `conversation_id` are bound by the agent route when present in the body.
+  `clear_contextvars()` runs in middleware `finally` to prevent leakage.
+- Never log secrets (`api_key`, `Authorization` header, request body, model
+  output). The middleware specifically excludes those.
 
 See `.env.example` for all variables and provider-specific examples.
 

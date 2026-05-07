@@ -4,6 +4,7 @@
 .gitignore
 .venv
 .worktrees
+logs/
 __pycache__
 *.pyc
 *.pyo

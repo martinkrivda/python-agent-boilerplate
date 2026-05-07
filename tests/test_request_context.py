@@ -1,18 +1,27 @@
-from app.core.request_context import get_request_id, reset_request_id, set_request_id
+"""request_context is now a thin read-only wrapper over structlog.contextvars."""
 
+from __future__ import annotations
 
-def test_set_and_get_request_id():
-    token = set_request_id("abc-123")
-    assert get_request_id() == "abc-123"
-    reset_request_id(token)
+import structlog
+
+from app.core.request_context import get_request_id
 
 
 def test_default_request_id_is_empty():
+    structlog.contextvars.clear_contextvars()
     assert get_request_id() == ""
 
 
-def test_reset_restores_previous():
-    token = set_request_id("first")
-    assert get_request_id() == "first"
-    reset_request_id(token)
+def test_get_request_id_reads_bound_value():
+    structlog.contextvars.clear_contextvars()
+    structlog.contextvars.bind_contextvars(request_id="abc-123")
+    try:
+        assert get_request_id() == "abc-123"
+    finally:
+        structlog.contextvars.clear_contextvars()
+
+
+def test_get_request_id_after_clear():
+    structlog.contextvars.bind_contextvars(request_id="x")
+    structlog.contextvars.clear_contextvars()
     assert get_request_id() == ""
