@@ -101,7 +101,6 @@
       "Edit(./.github/**)",
       "Edit(./pyproject.toml)",
       "Edit(./Dockerfile)",
-      "Edit(./docker-compose.yml)",
       "Edit(./docker-compose.yaml)",
       "Edit(./.env.example)",
       "Edit(./.python-version)",

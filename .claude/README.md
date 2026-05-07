@@ -35,7 +35,7 @@ Personal `settings.local.json` overrides take precedence over `settings.json` fo
 ## Permission tiers
 
 - **`allow`** — read-only and idiomatic dev commands (`uv`, `pytest`, `ruff`, read-only `git`/`docker`/`kubectl`/`helm`, search & filesystem read tools, edits inside `app/`, `tests/`, `deploy/`, `docs/`).
-- **`ask`** — state-changing infra (`docker build/run/push`, `kubectl apply/create`, `helm install/upgrade`, `uv publish`) and edits to sensitive root files (`pyproject.toml`, `Dockerfile`, `docker-compose.yml`, `.github/`, `CLAUDE.md`).
+- **`ask`** — state-changing infra (`docker build/run/push`, `kubectl apply/create`, `helm install/upgrade`, `uv publish`) and edits to sensitive root files (`pyproject.toml`, `Dockerfile`, `docker-compose.yaml`, `.github/`, `CLAUDE.md`).
 - **`deny`** — mutating `git` commands, destructive infra ops (`kubectl delete`, `docker rm`, `rm -rf`), and reads of secrets (`.env`, `secrets/`, private keys).
 
 ## Hooks

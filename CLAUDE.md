@@ -8,6 +8,10 @@ Production-ready FastAPI microservice exposing a provider-agnostic AI agent REST
 
 **Python 3.14+ · uv · FastAPI · Pydantic v2 · structlog · prometheus-client**
 
+## Project conventions
+
+- **YAML files use `.yaml`, never `.yml`.** This is strict — applies to Helm charts, Kubernetes manifests, `docker-compose.yaml`, GitHub workflows, and any other YAML in this repository. When creating or renaming YAML files, use `.yaml`. Flag any `.yml` file as a violation in code review.
+
 ## Setup & Commands
 
 ```bash
