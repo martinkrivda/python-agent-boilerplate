@@ -1,17 +1,36 @@
 # Claude Code project settings
 
-`settings.json` is the **shared, committed** Claude Code config for this repository.
-It defines what Claude can do without asking, what needs confirmation, what is forbidden,
-and which automations run on tool use / session lifecycle events.
+The `.claude/` directory contains project-wide configuration shared with the team.
 
-## Files
+## Layout
 
-| File | Scope | Committed |
-|------|-------|-----------|
-| `settings.json` | Project-wide rules everyone shares | yes |
+| Path | Purpose | Committed |
+|------|---------|-----------|
+| `settings.json` | Permissions, hooks, env — defines what Claude may do | yes |
 | `settings.local.json` | Personal overrides (extra MCP servers, model, output style…) | no — gitignored |
+| `agents/*.md` | Project-specific subagents (specialised reviewers / scaffolders) | yes |
+| `commands/*.md` | Project-specific slash commands (`/test`, `/lint`, `/check`, …) | yes |
 
-Personal overrides take precedence over `settings.json` for the keys they define.
+Personal `settings.local.json` overrides take precedence over `settings.json` for keys it defines.
+
+## Subagents (`agents/`)
+
+| Agent | When to use |
+|-------|-------------|
+| `python-reviewer` | After non-trivial Python changes — reviews against project conventions, runs ruff + pytest |
+| `route-builder` | When adding a new REST endpoint — scaffolds schema + route + service + tests |
+| `provider-adder` | When adding a non-OpenAI-compatible AI provider (Anthropic / Bedrock / Gemini) |
+| `test-debugger` | When pytest fails — diagnoses against this project's testing model |
+
+## Slash commands (`commands/`)
+
+| Command | Effect |
+|---------|--------|
+| `/test` | `uv run pytest tests/ -q` with summary |
+| `/lint` | `ruff check` + `ruff format --check`, auto-fix safe issues |
+| `/check` | Full quality gate (lint + format + tests) |
+| `/coverage` | `pytest --cov=app --cov-branch` with gap report |
+| `/add-route <method> <path>` | Dispatches `route-builder` after confirming request/response shape |
 
 ## Permission tiers
 
