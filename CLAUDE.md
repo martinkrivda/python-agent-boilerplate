@@ -116,7 +116,7 @@ app.add_middleware(CorrelationIdMiddleware) # outermost
 | `BUILD_COMMIT` | `""` (auto-baked at Docker build) |
 | `BUILD_TIMESTAMP` | `""` (auto-baked at Docker build) |
 | `LOG_FORMAT` | `json` (or `console` for local dev) |
-| `LOG_TO_FILE` | `true` — also write to `logs/app.log` |
+| `LOG_TARGET` | `stdout` (`stderr`, `file`, or `none` also supported) |
 | `LOG_DIR` | `logs` |
 | `LOG_FILE_NAME` | `app.log` |
 | `LOG_ROTATION_WHEN` | `midnight` — daily UTC rotation |

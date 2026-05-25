@@ -5,6 +5,7 @@ from __future__ import annotations
 import gzip
 import json
 import logging
+import sys
 from pathlib import Path
 
 import pytest
@@ -28,7 +29,7 @@ def _isolated_logging():
 
 def _settings(tmp_path: Path, **overrides) -> Settings:
     base = {
-        "log_to_file": True,
+        "log_target": "file",
         "log_dir": str(tmp_path),
         "log_file_name": "app.log",
         "log_format": "json",
@@ -104,10 +105,39 @@ def test_log_lines_omit_contextvars_after_clear(tmp_path: Path):
 
 
 def test_file_logging_can_be_disabled(tmp_path: Path):
-    s = _settings(tmp_path, log_to_file=False)
+    s = _settings(tmp_path, log_target="stdout")
     configure_logging(s)
     structlog.get_logger("test").info("only_console")
     assert not (tmp_path / "app.log").exists()
+
+
+def test_default_stream_logging_writes_to_stdout(tmp_path: Path):
+    s = _settings(tmp_path, log_target="stdout")
+    configure_logging(s)
+
+    stream_handler = next(
+        h for h in logging.getLogger().handlers if isinstance(h, logging.StreamHandler)
+    )
+
+    assert stream_handler.stream is sys.stdout
+
+
+def test_stream_logging_can_target_stderr(tmp_path: Path):
+    s = _settings(tmp_path, log_target="stderr")
+    configure_logging(s)
+
+    stream_handler = next(
+        h for h in logging.getLogger().handlers if isinstance(h, logging.StreamHandler)
+    )
+
+    assert stream_handler.stream is sys.stderr
+
+
+def test_stream_logging_can_be_disabled(tmp_path: Path):
+    s = _settings(tmp_path, log_target="none")
+    configure_logging(s)
+
+    assert logging.getLogger().handlers == []
 
 
 def test_rotation_produces_gzipped_backup(tmp_path: Path):

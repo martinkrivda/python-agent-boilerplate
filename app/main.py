@@ -1,11 +1,10 @@
 from contextlib import asynccontextmanager
 
 import structlog
-from a2wsgi import WSGIMiddleware
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from prometheus_client import make_wsgi_app
+from prometheus_client import make_asgi_app
 
 from app import __version__
 from app.ai.model_settings import ModelSettings
@@ -111,5 +110,5 @@ app.include_router(health_router)
 app.include_router(agent_router, prefix="/rest/v1")
 app.include_router(models_router, prefix="/rest/v1")
 
-# Prometheus WSGI mounted at /metrics (excluded from envelope and self-instrumentation)
-app.mount("/metrics", WSGIMiddleware(make_wsgi_app()))
+# Prometheus ASGI app mounted at /metrics (excluded from envelope and self-instrumentation)
+app.mount("/metrics", make_asgi_app())

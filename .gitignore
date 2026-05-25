@@ -6,8 +6,28 @@ dist/
 wheels/
 *.egg-info
 
+# macOS
+.DS_Store
+
+# Test / tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Coverage
+.coverage
+coverage.xml
+htmlcov/
+
 # Virtual environments
 .venv
+
+# Local env files
+.env
+.env.*
+
+# Keep example env files tracked
+!.env.example
 
 # Git worktrees
 .worktrees/

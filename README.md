@@ -124,6 +124,20 @@ AI_BASE_URL=http://localhost:8001/v1
 AI_API_KEY=token-abc123
 ```
 
+## Logging
+
+By default the service writes structured logs to stdout, which is the
+recommended target for Docker and Kubernetes:
+
+```bash
+LOG_FORMAT=json
+LOG_TARGET=stdout   # stdout | stderr | file | none
+```
+
+Set `LOG_TARGET=stderr` if your runtime expects application logs on stderr.
+File logging is still available for non-container deployments with
+`LOG_TARGET=file`; make sure `LOG_DIR` points to a writable directory.
+
 ## Docker
 
 ```bash

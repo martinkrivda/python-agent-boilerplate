@@ -15,6 +15,7 @@ def test_settings_defaults():
     assert s.ai_supports_streaming is False
     assert s.ai_probe_on_ready is False
     assert s.log_level == "INFO"
+    assert s.log_target == "stdout"
     assert s.app_env == "development"
 
 

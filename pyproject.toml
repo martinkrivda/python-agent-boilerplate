@@ -12,7 +12,6 @@ dependencies = [
     "openai>=1.35",
     "structlog>=24.1",
     "prometheus-client>=0.20",
-    "a2wsgi>=1.10.10",
     "typer>=0.25.1",
     "rich>=15.0.0",
 ]

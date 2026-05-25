@@ -8,6 +8,8 @@ metadata:
 data:
   APP_ENV: production
   LOG_LEVEL: INFO
+  LOG_FORMAT: json
+  LOG_TARGET: stdout
   AI_PROVIDER: ollama
   AI_MODEL: qwen3:8b
   AI_BASE_URL: http://ollama:11434/v1

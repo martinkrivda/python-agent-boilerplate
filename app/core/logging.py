@@ -18,6 +18,7 @@ import logging.handlers
 import os
 import shutil
 import socket
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -79,6 +80,15 @@ def _build_file_handler(settings: Settings) -> logging.Handler:
     return handler
 
 
+def _build_handler(settings: Settings) -> logging.Handler | None:
+    if settings.log_target == "none":
+        return None
+    if settings.log_target == "file":
+        return _build_file_handler(settings)
+    stream = sys.stderr if settings.log_target == "stderr" else sys.stdout
+    return logging.StreamHandler(stream)
+
+
 def configure_logging(settings: Settings) -> None:
     """Configure stdlib + structlog. Idempotent — safe to call more than once."""
     log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
@@ -103,16 +113,11 @@ def configure_logging(settings: Settings) -> None:
         foreign_pre_chain=pre_chain,
     )
 
-    # Console handler — always present (12-factor / Docker / K8s friendly).
-    console = logging.StreamHandler()
-    console.setFormatter(formatter)
-    root.addHandler(console)
-
-    # File handler — opt-in via LOG_TO_FILE.
-    if settings.log_to_file:
-        fh = _build_file_handler(settings)
-        fh.setFormatter(formatter)
-        root.addHandler(fh)
+    # Single target by default: stdout/stderr for containers, file for writable hosts.
+    handler = _build_handler(settings)
+    if handler is not None:
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
 
     structlog.configure(
         processors=[

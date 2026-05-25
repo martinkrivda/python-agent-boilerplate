@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,11 +10,15 @@ class Settings(BaseSettings):
     app_env: str = "development"
     log_level: str = "INFO"
 
-    # Logging — console always enabled. File logging is opt-in.
-    # When enabled: TimedRotatingFileHandler writes to {log_dir}/{log_file_name},
+    # Logging — stream logging is the production default for Docker/K8s.
+    # LOG_TARGET controls where logs are written:
+    # "stdout" (Docker/K8s default), "stderr", "file", or "none".
+    # File logging needs a writable filesystem, so use it only when LOG_DIR is writable.
+    log_target: Literal["stdout", "stderr", "file", "none"] = "stdout"
+
+    # When LOG_TARGET=file: TimedRotatingFileHandler writes to {log_dir}/{log_file_name},
     # rotates by `log_rotation_when` (midnight = daily), gzips rotated files,
     # and keeps the last `log_rotation_backup_count` (default 30 → ~30 days).
-    log_to_file: bool = True
     log_dir: str = "logs"
     log_file_name: str = "app.log"
     log_rotation_when: str = "midnight"

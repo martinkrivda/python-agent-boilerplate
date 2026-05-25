@@ -1,0 +1,39 @@
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments and generated package output
+.venv/
+build/
+dist/
+wheels/
+*.egg-info/
+
+# Dependency lockfile - large, generated, rarely useful for code review context
+uv.lock
+
+# Test, type-checker, coverage, and linter caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Runtime logs and local environment files
+logs/
+.env
+.env.*
+
+# Git internals and local worktrees
+.git/
+.worktrees/
+
+# Local editor/agent state
+.codex/
+.claude/settings.local.json
+.DS_Store
+
+# Superpowers planning artifacts - past plans and specs, not part of runtime code
+docs/superpowers/

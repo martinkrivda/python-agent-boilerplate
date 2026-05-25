@@ -35,8 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **File logging with rotation, gzip, and retention.** structlog now wraps
   stdlib `logging` so events flow through the same pipeline whether emitted
   by `structlog.get_logger()` or stdlib `logging.getLogger(...)`.
-  - Console handler always present (12-factor / Docker / K8s).
-  - Optional `TimedRotatingFileHandler` (default ON via `LOG_TO_FILE=true`)
+  - `LOG_TARGET=stdout` by default, with `stderr`, `file`, and `none` also
+    supported.
+  - `LOG_TARGET=file` enables `TimedRotatingFileHandler`, which
     writes to `logs/app.log`, rotates daily at UTC midnight, gzips rotated
     files, and prunes after `LOG_ROTATION_BACKUP_COUNT` (default 30 → ≈30
     days).
@@ -47,10 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `log_format` setting: `json` (default) or `console` (pretty for dev).
 - `request_context.py` now reads from `structlog.contextvars` instead of a
   bespoke `ContextVar`.
-- New env vars: `LOG_FORMAT`, `LOG_TO_FILE`, `LOG_DIR`, `LOG_FILE_NAME`,
+- New env vars: `LOG_FORMAT`, `LOG_TARGET`, `LOG_DIR`, `LOG_FILE_NAME`,
   `LOG_ROTATION_WHEN`, `LOG_ROTATION_BACKUP_COUNT`.
-- 7 new tests cover file write, static + dynamic fields, disable toggle,
-  gzip rotation, and backup-count retention.
+- 10 tests cover file write, stream target selection, static + dynamic fields,
+  disable toggle, gzip rotation, and backup-count retention.
 - `.github/dependabot.yml` — weekly Monday-morning updates for `uv`
   (Python deps, lockfile-only strategy), `docker` (base image), and
   `github-actions`. Minor/patch updates grouped to keep PR noise down;
